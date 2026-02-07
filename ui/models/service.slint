@@ -1,0 +1,10 @@
+import {
+    Characteristic,
+} from "./characteristic.slint";
+
+// @rust-attr(derive(serde::Serialize, serde::Deserialize))
+export struct Service{
+  uuid: string,
+  primary: bool, 
+  characteristics: [Characteristic],
+}

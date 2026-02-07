@@ -3,7 +3,10 @@
 
 import { IconButton } from "./icon_button.slint";
 import { MaterialText } from "./material_text.slint";
-import { MaterialTypography, TextStyle } from "../styling/material_typography.slint";
+import {
+    MaterialTypography,
+    TextStyle,
+} from "../styling/material_typography.slint";
 import { MaterialPalette } from "../styling/material_palette.slint";
 import { MaterialStyleMetrics } from "../styling/material_style_metrics.slint";
 import { IconButtonItem } from "./bottom_app_bar.slint";
@@ -30,7 +33,7 @@ component BaseAppBar {
     min_height: layout.min_height;
 
     Rectangle {
-        background: root.show_background ? MaterialPalette.surface_container :  MaterialPalette.surface;
+        background: root.show_background ? MaterialPalette.surface_container : MaterialPalette.surface;
 
         layout := VerticalLayout {
             padding_top: root.appbar_padding_top;
@@ -43,7 +46,7 @@ component BaseAppBar {
                 padding_right: root.appbar_padding_right;
                 spacing: MaterialStyleMetrics.spacing_6;
 
-                if root.leading_button.icon.width > 0 && root.leading_button.icon.height > 0 : VerticalLayout {
+                if root.leading_button.icon.width > 0 && root.leading_button.icon.height > 0: VerticalLayout {
                     alignment: center;
 
                     IconButton {
@@ -57,7 +60,7 @@ component BaseAppBar {
                     }
                 }
 
-                if !root.two_rows : MaterialText {
+                if !root.two_rows: MaterialText {
                     horizontal_stretch: 1;
                     text: root.title;
                     vertical_alignment: center;
@@ -68,17 +71,17 @@ component BaseAppBar {
                 }
 
                 // spacer
-                if root.two_rows : Rectangle {
+                if root.two_rows: Rectangle {
                     horizontal_stretch: 1;
                 }
 
-                if root.trailing_buttons.length > 0 : VerticalLayout {
+                if root.trailing_buttons.length > 0: VerticalLayout {
                     alignment: center;
 
                     HorizontalLayout {
                         spacing: top_layout.spacing;
 
-                        for item[index] in root.trailing_buttons : IconButton {
+                        for item[index] in root.trailing_buttons: IconButton {
                             icon: item.icon;
                             enabled: item.enabled;
                             tooltip: item.tooltip;
@@ -91,11 +94,11 @@ component BaseAppBar {
                 }
             }
 
-            if root.two_rows && root.title != "" : HorizontalLayout {
+            if root.two_rows && root.title != "": HorizontalLayout {
                 padding_left: root.text_padding;
                 padding_right: self.padding_left;
 
-                 MaterialText {
+                MaterialText {
                     text: root.title;
                     horizontal_alignment: root.horizontal_alignment;
                     color: MaterialPalette.on_surface;

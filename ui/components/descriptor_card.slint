@@ -1,0 +1,36 @@
+import { Descriptor } from "../models/descriptor.slint";
+import { Expandable } from "../shared_components/expandable.slint";
+import { TextWithLabel } from "./text_with_label.slint"; 
+import { TextField } from "../../material/material.slint";
+import {
+    CharacteristicPropertyFlag,
+} from "../models/characteristic_property_flag.slint";
+
+export component DescriptorCard {
+    in property <Descriptor> descriptor;
+    in property <CharacteristicPropertyFlag> characteristicPropFlag;
+
+    VerticalLayout {
+        alignment: start;
+
+        Expandable {
+            title: descriptor.name;
+            VerticalLayout {
+                TextWithLabel {
+                    label: "Uuid";
+                    text: descriptor.uuid;
+                }
+
+                TextWithLabel {
+                    label: "Service Uuid";
+                    text: descriptor.serviceUuid;
+                }
+
+                TextWithLabel {
+                    label: "Characteristic Uuid";
+                    text: descriptor.characteristicUuid;
+                }
+            }
+        }
+    }
+}

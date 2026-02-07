@@ -1,0 +1,28 @@
+import { ElevatedCard } from "../material/ui/components/card.slint";
+import { Vertical } from "../material/material.slint";
+import { CharacteristicCard } from "components/characteristic_card.slint";
+import { Characteristic } from "./models/characteristic.slint";
+import {
+    CharacteristicPropertyFlag,
+} from "./models/characteristic_property_flag.slint";
+
+export component MainContent inherits VerticalLayout {
+
+    property <Characteristic> characteristic: {
+        uuid: "0f9895a6-c8c0-4c2a-aa8a-b754f2395524",
+        serviceUuid: "d7beaedc-b20f-4e80-aace-2557660923f4",
+        properties: CharacteristicPropertyFlag.READ,
+        descriptors: [
+            {
+                uuid: "ad2fd79a-8af7-46cb-b69d-e50c5c81ec2c",
+                name: "Battery Services",
+                serviceUuid: "d79503fe-bfd4-4bee-aec3-645cf9b04431",
+                characteristicUuid: "19d60403-6f99-480b-be73-d68cc77c05ee",
+            }
+        ],
+    };
+
+    CharacteristicCard {
+        characteristic: characteristic;
+    }
+}

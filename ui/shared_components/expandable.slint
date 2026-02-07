@@ -1,0 +1,36 @@
+import { Descriptor } from "../models/descriptor.slint";
+import { MaterialTypography, IconButton } from "../../material/material.slint";
+import { Icons } from "../../material/ui/icons/icons.slint";
+
+export component Expandable inherits Rectangle {
+    in property <string> title;
+    property <bool> expanded;
+
+    VerticalLayout {
+        alignment: start;
+
+        HorizontalLayout {
+
+            IconButton {
+                width: 30px;
+                height: 30px;
+                icon: expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down;
+                clicked => {
+                    expanded = !expanded
+                }
+            }
+
+            Text {
+                horizontal-alignment: TextHorizontalAlignment.left;
+                vertical-alignment: TextVerticalAlignment.center;
+                text: title;
+            }
+        }
+
+        Rectangle {
+            visible: expanded;
+
+            @children
+        }
+    }
+}

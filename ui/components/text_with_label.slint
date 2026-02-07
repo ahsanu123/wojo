@@ -1,0 +1,23 @@
+import { MaterialTypography } from "../../material/material.slint";
+
+export component TextWithLabel {
+    in property <string> label;
+    in property <string> text;
+
+    HorizontalLayout {
+        alignment: start;
+
+        Text {
+            text: label;
+            font-size: MaterialTypography.label_large.font-size;
+            font-weight: MaterialTypography.label_large.font-weight;
+            horizontal-alignment: TextHorizontalAlignment.left;
+        }
+
+        Text {
+            text: text;
+            font-size: MaterialTypography.label_large.font-size;
+            horizontal-alignment: TextHorizontalAlignment.left;
+        }
+    }
+}

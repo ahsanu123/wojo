@@ -1,5 +1,7 @@
 slint::include_modules!();
 
+pub mod ble;
+
 fn ui() -> MainWindow {
     MainWindow::new().unwrap()
 }

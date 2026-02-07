@@ -1,0 +1,35 @@
+// @rust-attr(derive(serde::Serialize, serde::Deserialize))
+export enum CharacteristicPropertyFlag{
+  BROADCAST,
+  READ,
+  WRITE_WITHOUT_RESPONSE,
+  WRITE,
+  NOTIFY,  
+  INDICATE,
+  AUTHENTICATED_SIGNED_WRITES,
+  EXTENDED_PROPERTIES
+}
+
+export global globalCharacteristicPropertyFlag {
+    public pure function toString(char: CharacteristicPropertyFlag) -> string {
+        if (char == CharacteristicPropertyFlag.READ) {
+            return "Read";
+        } else if (char == CharacteristicPropertyFlag.BROADCAST) {
+            return "Broadcast";
+        } else if (char == CharacteristicPropertyFlag.WRITE-WITHOUT-RESPONSE) {
+            return "Write Without Response";
+        } else if (char == CharacteristicPropertyFlag.WRITE) {
+            return "Write";
+        } else if (char == CharacteristicPropertyFlag.NOTIFY) {
+            return "Notify";
+        } else if (char == CharacteristicPropertyFlag.INDICATE) {
+            return "Indicate";
+        } else if (char == CharacteristicPropertyFlag.AUTHENTICATED-SIGNED-WRITES) {
+            return "Authenticated Signed Writes";
+        } else if (char == CharacteristicPropertyFlag.EXTENDED-PROPERTIES) {
+            return "Extended Properties";
+        } else {
+            return "not valid!!";
+        }
+    }
+}

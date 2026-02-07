@@ -1,0 +1,15 @@
+import {
+    CharacteristicPropertyFlag,
+} from "./characteristic_property_flag.slint";
+import {
+    Descriptor,
+} from "./descriptor.slint";
+
+
+// @rust-attr(derive(serde::Serialize, serde::Deserialize))
+export struct Characteristic{
+  uuid: string,
+  serviceUuid: string, 
+  properties: CharacteristicPropertyFlag,
+  descriptors: [Descriptor],
+}

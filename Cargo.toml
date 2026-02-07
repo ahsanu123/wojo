@@ -13,7 +13,10 @@ path = "src/main.rs"
 name = "wojo"
 
 [dependencies]
-slint = { version = "1.13", features = ["backend-android-activity-06"] }
+btleplug = { version = "0.11.8", features = ["serde"] }
+serde = { version = "1.0.228", features = ["derive"]}
+slint = { version = "1.13", features = ["backend-android-activity-06", "serde"] }
+tokio = { version = "1.49.0", features = ["full"] }
 
 [build-dependencies]
 slint-build = { version = "1.13"  }

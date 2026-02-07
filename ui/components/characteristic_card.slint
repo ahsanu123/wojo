@@ -1,0 +1,50 @@
+import { ElevatedCard } from "../../material/material.slint";
+import { Characteristic } from "../models/characteristic.slint";
+import {
+    MaterialTypography,
+    HorizontalDivider,
+} from "../../material/material.slint";
+import { TextWithLabel } from "./text_with_label.slint"; 
+import {
+    globalCharacteristicPropertyFlag,
+} from "../models/characteristic_property_flag.slint";
+import { Expandable } from "../shared_components/expandable.slint";
+import { Descriptor } from "../models/descriptor.slint";
+import { DescriptorCard } from "./descriptor_card.slint";
+
+export component CharacteristicCard {
+    in property <Characteristic> characteristic;
+
+    ElevatedCard {
+        width: 100%;
+        min-height: 250px;
+
+        VerticalLayout {
+            padding: 20px;
+            alignment: start;
+
+            TextWithLabel {
+                label: "characteristic uuid: ";
+                text: characteristic.uuid;
+            }
+
+            TextWithLabel {
+                label: "service uuid: ";
+                text: characteristic.serviceUuid;
+            }
+
+            TextWithLabel {
+                label: "property flag: ";
+                text: globalCharacteristicPropertyFlag.toString(characteristic.properties);
+            }
+
+            for descriptor in characteristic.descriptors: descriptorText := VerticalLayout {
+                HorizontalDivider { }
+
+                DescriptorCard {
+                    descriptor: descriptor;
+                }
+            }
+        }
+    }
+}

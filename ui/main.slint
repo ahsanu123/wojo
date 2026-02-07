@@ -1,18 +1,25 @@
-import { FilledButton, ElevatedCard } from "@material";
-export { MaterialWindowAdapter } from "@material";
+import {
+    FilledButton,
+    ElevatedCard,
+    MaterialWindowAdapter,
+    Horizontal,
+    Vertical,
+    ElevatedCard,
+} from "../material/material.slint";
+import { SideNavigation } from "side_navigation.slint";
+import { MainContent } from "main_content.slint";
 
 export component MainWindow inherits Window {
-    property <int> count: 0;
+    width: 1200px;
+    height: 800px;
 
-    ElevatedCard {
-        width: 90%;
-        height: 90%;
-        FilledButton {
-            text: "Count: " + count;
-            icon: @image-url("slint-logo.svg");
-            clicked => {
-                count += 1;
-            }
+    Vertical {
+        padding: 0px;
+
+        Horizontal {
+            SideNavigation { }
+
+            MainContent { }
         }
     }
 }
