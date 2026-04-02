@@ -1,11 +1,13 @@
 use btleplug::{api::CentralState, platform::Adapter};
 use std::collections::HashMap;
 
+use crate::{MsgTypeAndVal, TX};
+
 mod initialization;
 
 pub trait DevicesStoreTrait {
     fn set_adapters(&mut self, adapters: Vec<Adapter>);
-    fn get_adapter_infos(&mut self) -> Vec<String>;
+    fn get_adapter_infos(&mut self) -> impl Future<Output = Vec<String>>;
 }
 
 pub struct DevicesStore {
@@ -29,7 +31,13 @@ impl DevicesStoreTrait for DevicesStore {
         self.adapters = adapters;
     }
 
-    fn get_adapter_infos(&mut self) -> Vec<String> {
+    async fn get_adapter_infos(&mut self) -> Vec<String> {
+        if let Some(tx) = TX.get() {
+            tx.send(MsgTypeAndVal::SetAdapters(self.adapter_infos.clone()))
+                .await
+                .expect("fail to send adapter infos");
+        }
+
         self.adapter_infos.clone()
     }
 }
