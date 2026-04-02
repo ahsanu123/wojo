@@ -8,6 +8,12 @@ import {
 } from "../material/material.slint";
 import { SideNavigation } from "side_navigation.slint";
 import { MainContent } from "main_content.slint";
+import { DevicesStoreSlint } from "stores/devices-stores.slint";
+
+export global Logic {
+    in-out property <int> the-value;
+    pure callback magic-operation(int) -> int;
+}
 
 export component MainWindow inherits Window {
     width: 1200px;

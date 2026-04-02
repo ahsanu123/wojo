@@ -1,7 +1,5 @@
-use btleplug::{
-    api::Manager as _,
-    platform::{Adapter, Manager},
-};
+use btleplug::api::Central as _;
+use btleplug::{api::Manager as _, platform::Manager};
 use tokio::sync::OnceCell;
 
 pub mod characteristic;
@@ -15,20 +13,19 @@ pub async fn ble_manager() -> &'static Manager {
         .await
 }
 
-pub async fn list_adapters() -> Vec<Adapter> {
-    let manager = ble_manager().await;
-    manager.adapters().await.expect("cant get list adapter!!")
-}
-
 #[cfg(test)]
-mod test {
-    use btleplug::api::Central;
+mod ble_tests {
 
     use super::*;
 
     #[tokio::test]
     async fn test_list_ble_adapters() {
-        let adapters = list_adapters().await;
+        let adapters = ble_manager()
+            .await
+            .adapters()
+            .await
+            .expect("fail to list adapters");
+
         println!("adapters: {adapters:?}");
 
         for adapter in adapters {

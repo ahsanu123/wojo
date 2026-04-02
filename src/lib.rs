@@ -1,14 +1,29 @@
+use crate::stores::DEVICES_STORE;
+
 slint::include_modules!();
 
 pub mod ble;
+pub mod models;
+pub mod stores;
 
-fn ui() -> MainWindow {
-    MainWindow::new().unwrap()
+pub trait InitTrait {
+    fn init(&mut self) -> impl Future<Output = ()>;
+}
+
+async fn background_task() {
+    DEVICES_STORE.lock().await.init().await;
 }
 
 pub fn main() {
-    let ui = ui();
-    ui.run().unwrap();
+    let main_window = MainWindow::new().expect("fail to create MainWindow");
+
+    main_window.global::<Logic>();
+
+    tokio::spawn(async {
+        background_task().await;
+    });
+
+    main_window.run().unwrap();
 }
 
 #[cfg(target_os = "android")]
