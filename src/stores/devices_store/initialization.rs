@@ -1,5 +1,5 @@
 use super::DevicesStore;
-use crate::{InitTrait, ble::ble_manager};
+use crate::{InitTrait, ble::ble_manager, stores::devices_store::DevicesStoreTrait};
 use btleplug::api::{Central, Manager};
 
 impl InitTrait for DevicesStore {
@@ -10,13 +10,19 @@ impl InitTrait for DevicesStore {
             return;
         }
 
+        let mut infos = Vec::<String>::new();
+
         for adapter in self.adapters.clone() {
             if let Ok(info) = adapter.adapter_info().await
                 && let Ok(state) = adapter.adapter_state().await
             {
-                self.adapter_infos.push(info.clone());
-                self.adapter_central_states.insert(info, state);
+                infos.push(info.clone());
+                // self.adapter_central_states.insert(info, state);
+
+                // self.adapter_infos.push(info.clone());
             }
         }
+
+        self.set_adapter_infos(infos);
     }
 }

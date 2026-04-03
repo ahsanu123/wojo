@@ -1,9 +1,21 @@
 import { ElevatedCard } from "../material/material.slint";
 import { Vertical } from "../material/material.slint";
+import {
+    NavigationDrawer,
+} from "../material/ui/components/navigation_drawer.slint";
 
-export component SideNavigation inherits Vertical {
-    ElevatedCard {
-        width: 25%;
-        height: 100%;
+import {
+    NavigationItem,
+} from "../material/ui/items/navigation_item.slint";
+
+import { DevicesStoreSlint } from "./stores/devices-stores.slint";
+
+export component SideNavigation {
+
+    Vertical {
+        navigationDrawer := NavigationDrawer {
+            width: 280px;
+            groups: [{ title: "Adapters", items: DevicesStoreSlint.adapterInfoNavItems }];
+        }
     }
 }

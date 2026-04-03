@@ -1,8 +1,8 @@
+import {
+    NavigationItem,
+} from "../../material/ui/items/navigation_item.slint";
+
 export global DevicesStoreSlint {
     in-out property <[string]> adapterInfos;
-}
-
-export global Logic {
-    in-out property <int> the-value;
-    pure callback magic-operation(int) -> int;
+    in-out property <[NavigationItem]> adapterInfoNavItems;
 }

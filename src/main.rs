@@ -3,5 +3,5 @@
 
 #[tokio::main]
 async fn main() {
-    wojo_lib::main();
+    wojo_lib::main().await;
 }
