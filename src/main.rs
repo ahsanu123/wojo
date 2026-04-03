@@ -5,12 +5,3 @@
 async fn main() {
     wojo_lib::main();
 }
-
-#[cfg(test)]
-mod test {
-
-    #[tokio::test]
-    async fn name() {
-        todo!();
-    }
-}

@@ -1,14 +1,20 @@
+use std::{env, time::Duration};
+
 use slint::Weak;
 use tokio::sync::{
     OnceCell,
     mpsc::{self, Receiver, Sender},
 };
 
-use crate::stores::{DEVICES_STORE, devices_store::DevicesStoreTrait};
+use crate::{
+    helpers::send_msg_type_and_val::{send_msg_and_val, try_send_msg_and_val},
+    stores::{DEVICES_STORE, devices_store::DevicesStoreTrait},
+};
 
 slint::include_modules!();
 
 pub mod ble;
+pub mod helpers;
 pub mod models;
 pub mod stores;
 
@@ -20,6 +26,8 @@ pub trait InitTrait {
 
 pub enum MsgTypeAndVal {
     SetAdapters(Vec<String>),
+    GetAdapters,
+    ShutdownTx,
 }
 
 async fn background_task(main_window: Weak<MainWindow>, mut rx: Receiver<MsgTypeAndVal>) {
@@ -47,30 +55,51 @@ async fn background_task(main_window: Weak<MainWindow>, mut rx: Receiver<MsgType
                 })
                 .unwrap();
             }
+            MsgTypeAndVal::GetAdapters => {
+                DEVICES_STORE.lock().await.get_adapter_infos().await;
+            }
+            MsgTypeAndVal::ShutdownTx => break,
         }
     }
 }
 
 pub fn main() {
+    unsafe {
+        env::set_var("SLINT_SCALE_FACTOR", "1");
+    }
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+
     let (tx, rx) = mpsc::channel::<MsgTypeAndVal>(10);
 
     let main_window = MainWindow::new().expect("fail to create MainWindow");
 
     main_window.global::<Logic>().on_get_adapter_info(move || {
-        tokio::spawn(async {
-            println!("on_get_adapter_info");
-            DEVICES_STORE.lock().await.get_adapter_infos().await;
-        });
+        try_send_msg_and_val(MsgTypeAndVal::GetAdapters).expect("fail to get adapters");
     });
 
     let window_weak = main_window.as_weak();
+    TX.set(tx).expect("fail to first set TX");
 
-    tokio::spawn(async move {
-        TX.get_or_init(async || tx).await;
-        background_task(window_weak, rx).await;
+    let bg_handle = runtime.spawn(async move { background_task(window_weak, rx).await });
+
+    main_window.run().expect("fail to run window");
+
+    println!("sending ShutdownTx");
+    runtime.block_on(async {
+        let _ = send_msg_and_val(MsgTypeAndVal::ShutdownTx).await;
+        let _ = bg_handle.await;
     });
 
-    main_window.run().unwrap();
+    println!("wait shutdown...");
+    runtime.shutdown_timeout(Duration::from_secs(5));
+    println!("success to exit");
+
+    unsafe {
+        env::remove_var("SLINT_SCALE_FACTOR");
+    }
 }
 
 #[cfg(target_os = "android")]
