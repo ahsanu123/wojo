@@ -6,6 +6,7 @@ import {
     Vertical,
     ElevatedCard,
     MaterialWindow,
+    VerticalDivider,
 } from "../material/material.slint";
 import { SideNavigation } from "side_navigation.slint";
 import { MainContent } from "main_content.slint";
@@ -17,33 +18,10 @@ import {
 } from "../material/ui/items/navigation_item.slint";
 
 export { DevicesStoreSlint }
+
 export component MainWindow inherits MaterialWindow {
     width: 1200px;
     height: 800px;
-
-    // Vertical {
-    //     Text {
-    //         text: "value is: " + Logic.the-value;
-    //     }
-    //
-    //     for adap in Logic.adapter: Text {
-    //         text: adap;
-    //     }
-    //
-    //     Button {
-    //         text: "get adapter info";
-    //         clicked => {
-    //             Logic.get_adapter_info()
-    //         }
-    //     }
-    //
-    //     Button {
-    //         text: "click me";
-    //         clicked => {
-    //             Logic.magic-operation(1)
-    //         }
-    //     }
-    // }
 
     Vertical {
         padding: 0px;
@@ -52,22 +30,8 @@ export component MainWindow inherits MaterialWindow {
 
             SideNavigation { }
 
-            HorizontalDivider { }
-
-            Button {
-                text: "get adapter info";
-                clicked => {
-                    Logic.get_adapter_info()
-                }
-            }
+            VerticalDivider { }
             // MainContent { }
         }
     }
-}
-
-export global Logic {
-    in-out property <int> the-value;
-    in-out property <[string]> adapter;
-    pure callback magic-operation(int) -> int;
-    pure callback get_adapter_info();
 }

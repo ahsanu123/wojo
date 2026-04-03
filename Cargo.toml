@@ -14,10 +14,12 @@ name = "wojo"
 
 [dependencies]
 btleplug = { version = "0.12.0", features = ["serde"] }
+btuuid = { version = "0.1.1", features = ["serde", "std", "uuid"] }
 futures = "0.3.32"
 serde = { version = "1.0.228", features = ["derive"]}
 slint = { version = "1.13", features = ["backend-android-activity-06", "serde"] }
 tokio = { version = "1.49.0", features = ["full"] }
+uuid = "1.23.0"
 
 [build-dependencies]
 slint-build = { version = "1.13"  }

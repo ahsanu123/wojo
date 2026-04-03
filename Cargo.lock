@@ -691,6 +691,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "btuuid"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f5f48f1e9b0aad0a4f05d17bdeae0fa20ff798e272a03a6940ca27ad9c5a6ae7"
+dependencies = [
+ "serde",
+ "uuid",
+]
+
+[[package]]
 name = "built"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6107,11 +6117,13 @@ name = "wojo"
 version = "0.0.1"
 dependencies = [
  "btleplug",
+ "btuuid",
  "futures",
  "serde",
  "slint",
  "slint-build",
  "tokio",
+ "uuid",
 ]
 
 [[package]]
