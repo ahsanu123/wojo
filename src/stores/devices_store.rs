@@ -25,11 +25,11 @@ pub struct DevicesStore {
 }
 
 impl DevicesStore {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Self {
             adapters: [].to_vec(),
             weak_main_window: Weak::default(),
-            adapter_peripherals_map: todo!(),
+            adapter_peripherals_map: HashMap::new(),
         }
     }
 

@@ -7,7 +7,7 @@ pub mod devices_store;
 pub mod global_stores;
 
 pub static DEVICES_STORE: LazyLock<Mutex<DevicesStore>> =
-    LazyLock::new(|| Mutex::new(DevicesStore::new()));
+    LazyLock::new(|| Mutex::new(DevicesStore::default()));
 
 pub static GLOBAL_STORE: LazyLock<Mutex<GlobalStore>> =
-    LazyLock::new(|| Mutex::new(GlobalStore::new()));
+    LazyLock::new(|| Mutex::new(GlobalStore::default()));

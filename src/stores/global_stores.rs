@@ -7,7 +7,7 @@ pub struct GlobalStore {
 }
 
 impl GlobalStore {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Self {
             initializing_app: true,
         }
