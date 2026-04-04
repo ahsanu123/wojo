@@ -50,6 +50,9 @@ mod ble_tests {
             println!("{peripherals:#?}");
 
             for peripheral in peripherals {
+                let id = peripheral.id();
+                let str_id = format!("{:?}", id);
+                println!("{str_id}");
                 let properties = peripheral
                     .properties()
                     .await

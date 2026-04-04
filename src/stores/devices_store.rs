@@ -1,49 +1,64 @@
-use std::collections::HashMap;
-
 use crate::helpers::set_ui_state::set_ui_state;
-use crate::{DevicesStoreSlint, MainWindow, NavigationItem};
-use btleplug::platform::{Adapter, Peripheral};
-use slint::{ComponentHandle, Weak};
+use crate::{DevicesStoreSlint, MainWindow, NavigationItem, models, slint_generatedMainWindow};
+use btleplug::api::{Peripheral as _, PeripheralProperties};
+use btleplug::platform::{Adapter, Peripheral, PeripheralId};
+use slint::{ComponentHandle, ToSharedString, Weak};
 use slint::{Image, ModelRc, VecModel};
+use std::collections::HashMap;
 
 mod initialization;
 
 pub trait DevicesStoreTrait {
-    fn set_adapters(&mut self, adapters: Vec<Adapter>);
-    fn set_adapter_infos(&mut self, adapters: Vec<String>);
+    fn set_adapters(&mut self, adapters: Vec<Adapter>) -> impl Future<Output = ()>;
 
-    fn set_adapter_peripherals_map(
+    fn set_adapter_infos(&mut self, adapters: Vec<String>) -> impl Future<Output = ()>;
+
+    fn set_peripherals_map(
         &mut self,
-        adapter_peripheral_map: HashMap<String, Vec<Peripheral>>,
-    );
+        id: PeripheralId,
+        peripheral: &Peripheral,
+    ) -> impl Future<Output = ()>;
+
+    fn set_peripheral_properties(
+        &mut self,
+        id: PeripheralId,
+        properties: &PeripheralProperties,
+    ) -> impl Future<Output = ()>;
+
+    fn set_peripheral_rssi(&mut self, id: PeripheralId, rssi: i16) -> impl Future<Output = ()>;
+
+    fn set_connected_peripheral(
+        &mut self,
+        id: PeripheralId,
+        is_connected: bool,
+    ) -> impl Future<Output = ()>;
+
+    fn set_ui_state(&mut self) -> impl Future<Output = ()>;
+
+    fn connect(&mut self, id: String) -> impl Future<Output = ()>;
 }
 
+#[derive(Default)]
 pub struct DevicesStore {
+    peripheral_str_id_map: HashMap<String, PeripheralId>,
     adapters: Vec<Adapter>,
-    adapter_peripherals_map: HashMap<String, Vec<Peripheral>>,
+    peripherals_model_map: HashMap<PeripheralId, models::Peripheral>,
+    peripherals_map: HashMap<PeripheralId, Peripheral>,
     weak_main_window: Weak<MainWindow>,
 }
 
 impl DevicesStore {
-    pub fn default() -> Self {
-        Self {
-            adapters: [].to_vec(),
-            weak_main_window: Weak::default(),
-            adapter_peripherals_map: HashMap::new(),
-        }
-    }
-
     pub fn set_weak_main_window(&mut self, weak_main_window: Weak<MainWindow>) {
         self.weak_main_window = weak_main_window;
     }
 }
 
 impl DevicesStoreTrait for DevicesStore {
-    fn set_adapters(&mut self, adapters: Vec<Adapter>) {
+    async fn set_adapters(&mut self, adapters: Vec<Adapter>) {
         self.adapters = adapters;
     }
 
-    fn set_adapter_infos(&mut self, adapters: Vec<String>) {
+    async fn set_adapter_infos(&mut self, adapters: Vec<String>) {
         let result = set_ui_state(&self.weak_main_window, |main_window| {
             let device_stores = main_window.global::<DevicesStoreSlint>();
 
@@ -76,11 +91,86 @@ impl DevicesStoreTrait for DevicesStore {
         }
     }
 
-    fn set_adapter_peripherals_map(
+    async fn set_peripherals_map(&mut self, id: PeripheralId, peripheral: &Peripheral) {
+        let services = peripheral.services();
+
+        self.peripherals_map.insert(id.clone(), peripheral.clone());
+
+        self.peripherals_model_map
+            .insert(id.clone(), models::Peripheral::new(id.clone()));
+
+        self.peripheral_str_id_map
+            .insert(format!("{:?}", id.clone()), id.clone());
+
+        if let Some(peripheral) = self.peripherals_model_map.get_mut(&id) {
+            peripheral.services = services;
+        }
+
+        self.set_ui_state().await;
+    }
+
+    async fn set_connected_peripheral(&mut self, id: PeripheralId, is_connected: bool) {
+        if let Some(peripheral) = self.peripherals_model_map.get_mut(&id) {
+            peripheral.is_connected = is_connected;
+        }
+        self.set_ui_state().await;
+    }
+
+    async fn set_peripheral_properties(
         &mut self,
-        adapter_peripheral_map: HashMap<String, Vec<Peripheral>>,
+        id: PeripheralId,
+        properties: &PeripheralProperties,
     ) {
-        todo!()
+        if let Some(peripheral) = self.peripherals_model_map.get_mut(&id) {
+            peripheral.properties = properties.clone();
+        }
+        self.set_ui_state().await;
+    }
+
+    async fn set_peripheral_rssi(&mut self, id: PeripheralId, rssi: i16) {
+        if let Some(peripheral) = self.peripherals_model_map.get_mut(&id) {
+            peripheral.rssi = rssi;
+        }
+        self.set_ui_state().await;
+    }
+
+    async fn set_ui_state(&mut self) {
+        let ui_peripheral = self
+            .peripherals_model_map
+            .iter()
+            .map(|(id, peripheral)| slint_generatedMainWindow::Peripheral {
+                peripheralId: format!("{:?}", id.clone()).into(),
+                address: peripheral.properties.address.to_shared_string(),
+                isConnected: peripheral.is_connected,
+                localname: peripheral
+                    .properties
+                    .local_name
+                    .clone()
+                    .unwrap_or("empty".into())
+                    .into(),
+                rssi: peripheral.properties.rssi.unwrap_or(0).into(),
+            })
+            .collect::<Vec<_>>();
+
+        println!("ui_peripheral length: {}", ui_peripheral.len());
+        let result = set_ui_state(&self.weak_main_window, move |main_window| {
+            let device_stores = main_window.global::<DevicesStoreSlint>();
+            let peripherals = ModelRc::new(VecModel::from(ui_peripheral));
+            device_stores.set_peripherals(peripherals);
+        });
+
+        match result {
+            Ok(_) => {}
+            Err(_) => println!("fail to set ui state"),
+        }
+    }
+
+    async fn connect(&mut self, id: String) {
+        if let Some(p_id) = self.peripheral_str_id_map.get(&id)
+            && let Some(peripheral) = self.peripherals_map.get_mut(p_id)
+        {
+            peripheral.connect().await.unwrap();
+        }
     }
 }
 

@@ -2,13 +2,12 @@ import {
     NavigationItem,
 } from "../../material/ui/items/navigation_item.slint";
 
-// export struct Map{
-//   key: string,
-//   value:
-// }
+import { Peripheral } from "../models/peripheral.slint";
 
 export global DevicesStoreSlint {
     in-out property <[string]> adapterInfos;
     in-out property <[NavigationItem]> adapterInfoNavItems;
-  // in-out property <> name;
+    in-out property <[Peripheral]> peripherals;
+
+    callback onRescan();
 }

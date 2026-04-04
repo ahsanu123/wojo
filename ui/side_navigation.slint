@@ -9,13 +9,23 @@ import {
 } from "../material/ui/items/navigation_item.slint";
 
 import { DevicesStoreSlint } from "./stores/devices-stores.slint";
+import { Button } from "std-widgets.slint";
 
 export component SideNavigation {
-
     Vertical {
-        navigationDrawer := NavigationDrawer {
-            width: 280px;
-            groups: [{ title: "Adapters", items: DevicesStoreSlint.adapterInfoNavItems }];
+        Text {
+            text: "Peripherals";
+        }
+
+        Button {
+            text: "re-scan";
+            clicked => {
+                DevicesStoreSlint.onRescan()
+            }
+        }
+
+        for p in DevicesStoreSlint.peripherals: Text {
+            text: p.localname;
         }
     }
 }
