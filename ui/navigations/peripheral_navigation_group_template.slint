@@ -1,0 +1,47 @@
+import { Peripheral } from "../models/peripheral.slint";
+import { DrawerHeader } from "../../material/ui/components/drawer.slint";
+import { HorizontalDivider } from "../../material/material.slint";
+import { Icons } from "../icons/icons.slint";
+import { DevicesStoreSlint } from "../stores/devices-stores.slint";
+import {
+    PeripheralNavigationItemTemplate,
+} from "peripheral_navigation_item_template.slint";
+
+export component PeripheralNavigationGroupTemplate {
+    in property <string> title;
+    in property <[Peripheral]> peripherals;
+    in property <int> current_index: -1;
+    in property <bool> has_divider;
+
+    callback select(index: int);
+
+    VerticalLayout {
+        alignment: start;
+
+        if root.title != 0:  DrawerHeader {
+            title: root.title;
+        }
+
+        for item[index] in root.peripherals: PeripheralNavigationItemTemplate {
+            icon: Icons.empty_filter;
+            text: item.localname;
+            selected: index == root.current_index;
+            index: index;
+            isConnected: item.isConnected;
+            rssi: item.rssi;
+            peripheralId: item.peripheralId;
+
+            onConnect(peripheralId) => {
+                DevicesStoreSlint.onPeripheralConnect(peripheralId);
+            }
+            onDisconnect(peripheralId) => {
+                DevicesStoreSlint.onPeripheralDisconnect(peripheralId);
+            }
+            onClicked(peripheralId) => {
+                DevicesStoreSlint.onPeripheralClicked(peripheralId);
+            }
+        }
+
+        if root.has_divider: HorizontalDivider { }
+    }
+}

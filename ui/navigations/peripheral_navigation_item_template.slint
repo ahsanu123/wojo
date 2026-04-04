@@ -1,0 +1,145 @@
+import {
+    BaseNavigationItemTemplate,
+} from "../../material/ui/components/base_navigation.slint";
+
+import {
+    MaterialTypography,
+} from "../../material/ui/styling/material_typography.slint";
+
+import {
+    MaterialPalette,
+} from "../../material/ui/styling/material_palette.slint";
+
+import {
+    MaterialStyleMetrics,
+} from "../../material/ui/styling/material_style_metrics.slint";
+
+import {
+    MaterialAnimations,
+} from "../../material/ui/styling/material_animations.slint";
+
+import {
+    StateLayerArea,
+    Icon,
+    MaterialText,
+    Horizontal,
+    IconButton,
+} from "../../material/material.slint";
+import { FilledButton } from "../../material/ui/components/filled_button.slint";
+import { Icons } from "../icons/icons.slint";
+
+export component PeripheralNavigationItemTemplate inherits BaseNavigationItemTemplate {
+
+    in property <string> peripheralId;
+    in property <bool> isConnected;
+    in property <int> rssi;
+
+    callback onConnect(peripheralId: string);
+    callback onDisconnect(peripheralId: string);
+    callback onClicked(peripheralId: string);
+
+    property <bool> has_icon: root.icon.width > 0 && root.icon.height > 0;
+    property <bool> has_selected_icon: root.selected_icon.width > 0 || root.selected_icon.height > 0;
+    property <color> color: MaterialPalette.on_surface_variant;
+
+    min_height: max(MaterialStyleMetrics.size_56, layout.min_height);
+
+    background_layer := Rectangle {
+        border_radius: self.height / 2;
+
+        state_layer := StateLayerArea {
+            border_radius: parent.border_radius;
+            color: root.selected ? transparent : root.color;
+
+            layout := HorizontalLayout {
+                padding_left: MaterialStyleMetrics.padding_16;
+                padding_right: MaterialStyleMetrics.padding_24;
+                padding_top: MaterialStyleMetrics.padding_16;
+                padding_bottom: self.padding_top;
+                spacing: MaterialStyleMetrics.spacing_12;
+
+                VerticalLayout {
+                    alignment: center;
+
+                    if !root.has_icon && !root.has_selected_icon: Rectangle {
+                        width: MaterialStyleMetrics.icon_size_24;
+                        height: self.width;
+
+                        Rectangle {
+                            width: 12px;
+                            height: self.width;
+                            border_radius: self.width / 2;
+                            background: root.color;
+                        }
+                    }
+
+                    if root.has_icon || root.has_selected_icon: Icon {
+                        source: root.icon;
+                        colorize: root.color;
+
+                        states [
+                            selected when root.selected && root.has_selected_icon: {
+                                source: root.selected_icon;
+                            }
+                        ]
+                    }
+                }
+
+                MaterialText {
+                    horizontal_stretch: 1;
+                    text: root.text + " ( rssi: " + rssi + " )";
+                    style: MaterialTypography.label_large;
+                    color: root.color;
+                    vertical_alignment: center;
+                }
+
+                HorizontalLayout {
+                    FilledButton {
+                        text: isConnected ? "disconnect" : "connect";
+                    }
+
+                    IconButton {
+                        icon: Icons.gear_setting;
+                        tooltip: "setting";
+                    }
+                }
+
+                if root.badge != "": MaterialText {
+                    text: root.badge;
+                    style: MaterialTypography.label_large;
+                    color: root.color;
+                    vertical_alignment: center;
+                }
+            }
+
+            clicked => {
+                root.clicked();
+                root.onClicked(root.peripheralId);
+            }
+
+            pointer_event(event) => {
+                root.pointer_event(event, {
+                    x: self.mouse_x,
+                    y: self.mouse_y,
+                });
+            }
+        }
+
+        animate background {
+            duration: MaterialAnimations.opacity_duration;
+            easing: MaterialAnimations.opacity_easing;
+        }
+    }
+
+    states [
+        selected when root.selected: {
+            background_layer.background: MaterialPalette.secondary_container;
+            root.color: MaterialPalette.on_secondary_container;
+        }
+    ]
+
+    animate color {
+        duration: MaterialAnimations.opacity_duration;
+        easing: MaterialAnimations.opacity_easing;
+    }
+}

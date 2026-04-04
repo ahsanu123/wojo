@@ -1,0 +1,229 @@
+import { ElevatedCard } from "../material/ui/components/card.slint";
+import { Characteristic } from "./models/characteristic.slint";
+import { Service } from "./models/service.slint";
+import { Icons } from "icons/icons.slint";
+import { Expandable } from "./shared_components/expandable.slint";
+import { FilledButton } from "../material/ui/components/filled_button.slint";
+import {
+    Vertical,
+    MaterialText,
+    Icon,
+    ListTile,
+    ScrollView,
+    TextField,
+    IconButton,
+} from "../material/material.slint";
+import {
+    globalCharacteristicPropertyFlag,
+} from "./models/characteristic_property_flag.slint";
+import {
+    CharacteristicPropertyFlag,
+} from "./models/characteristic_property_flag.slint";
+import {
+    MaterialTypography,
+} from "../material/ui/styling/material_typography.slint";
+
+component Header {
+    in property <string> title;
+    HorizontalLayout {
+        max-height: 60px;
+        VerticalLayout {
+            alignment: center;
+            Icon {
+                source: Icons.service;
+                height: 30px;
+                width: 30px;
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            MaterialText {
+                text: title + " Service";
+                style: MaterialTypography.title_large_bold;
+            }
+        }
+    }
+}
+
+component CharacteristicCard inherits ElevatedCard {
+    in property <Characteristic> characteristic;
+
+    function characteristicName() -> string {
+        if (characteristic.name.hasValue) {
+            return characteristic.name.value;
+        } else {
+            return characteristic.uuid;
+        }
+    }
+
+    VerticalLayout {
+        alignment: start;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+
+        HorizontalLayout {
+            alignment: space-between;
+            HorizontalLayout {
+                VerticalLayout {
+                    padding-right: 15px;
+                    alignment: center;
+                    Icon {
+                        source: Icons.binoculars;
+                    }
+                }
+
+                VerticalLayout {
+                    alignment: center;
+                    MaterialText {
+                        text: characteristicName();
+                        style: MaterialTypography.title_medium;
+                    }
+                }
+            }
+
+            IconButton {
+                icon: Icons.gear_setting;
+            }
+        }
+
+        HorizontalLayout {
+            alignment: start;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            MaterialText {
+                text: "Flags: ";
+            }
+
+            for prop in characteristic.properties: MaterialText {
+                text: globalCharacteristicPropertyFlag.toString(prop) + " ";
+            }
+        }
+
+        Expandable {
+            title: "Name and Description";
+            expandedHeight: 170px;
+            VerticalLayout {
+
+                HorizontalLayout {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    TextField {
+                        label: "Characteristic Name";
+                        placeholder_text: "edit characteristic name";
+                        trailing_icon: Icons.save;
+                        supporting_text: "saved to local database";
+                    }
+                }
+
+                HorizontalLayout {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    TextField {
+                        label: "Characteristic Description";
+                        placeholder_text: "edit characteristic description";
+                        trailing_icon: Icons.save;
+                        supporting_text: "saved to local database";
+                    }
+                }
+            }
+        }
+    }
+}
+
+component ListServicesCharacteristics inherits ScrollView {
+    in property <[Service]> services;
+
+    height: 800px;
+
+    function serviceName(service: Service) -> string {
+        if (service.name.hasValue && service.primary) {
+            return service.name.value + " ( primary - " + service.uuid + " )";
+        } else if (service.name.hasValue) {
+            return service.name.value + " ( " + service.uuid + " )";
+        } else {
+            return service.uuid;
+        }
+    }
+    VerticalLayout {
+        alignment: start;
+        for service in services: Vertical {
+            HorizontalLayout {
+                VerticalLayout {
+                    alignment: center;
+                    Icon {
+                        source: Icons.device;
+                    }
+                }
+
+                VerticalLayout {
+                    alignment: center;
+                    MaterialText {
+                        text: serviceName(service);
+                        style: MaterialTypography.title_medium;
+                    }
+                }
+            }
+
+            MaterialText {
+                text: service.description.hasValue ? service.description.value : "No Description";
+                style: MaterialTypography.body_medium;
+            }
+
+            Expandable {
+                title: "Name and Description";
+                expandedHeight: 170px;
+                VerticalLayout {
+
+                    HorizontalLayout {
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                        TextField {
+                            label: "Name";
+                            placeholder_text: "edit service name";
+                            trailing_icon: Icons.save;
+                            supporting_text: "saved to local database";
+                        }
+                    }
+
+                    HorizontalLayout {
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                        TextField {
+                            label: "Description";
+                            placeholder_text: "edit service description";
+                            trailing_icon: Icons.save;
+                            supporting_text: "saved to local database";
+                        }
+                    }
+
+                    for characteristic in service.characteristics: VerticalLayout {
+                        padding-top: 10px;
+                        CharacteristicCard {
+                            characteristic: characteristic;
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            height: 200px;
+            visible: false;
+        }
+    }
+}
+
+export component ServiceCharacteristics inherits Vertical {
+    in property <string> peripheralName;
+    in property <[Service]> services;
+
+    Header {
+        title: peripheralName;
+    }
+
+    ListServicesCharacteristics {
+        services: services;
+    }
+}

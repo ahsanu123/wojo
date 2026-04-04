@@ -1,36 +1,42 @@
 import { Descriptor } from "../models/descriptor.slint";
-import { MaterialTypography, IconButton } from "../../material/material.slint";
+import {
+    MaterialTypography,
+    IconButton,
+    MaterialText,
+    Vertical,
+} from "../../material/material.slint";
 import { Icons } from "../../material/ui/icons/icons.slint";
 
-export component Expandable inherits Rectangle {
+export component Expandable inherits VerticalLayout {
     in property <string> title;
+    in property <length> expandedHeight;
     property <bool> expanded;
 
-    VerticalLayout {
-        alignment: start;
+    alignment: start;
 
-        HorizontalLayout {
+    HorizontalLayout {
 
-            IconButton {
-                width: 30px;
-                height: 30px;
-                icon: expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down;
-                clicked => {
-                    expanded = !expanded
-                }
-            }
-
-            Text {
-                horizontal-alignment: TextHorizontalAlignment.left;
-                vertical-alignment: TextVerticalAlignment.center;
-                text: title;
+        IconButton {
+            width: 30px;
+            height: 30px;
+            icon: expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down;
+            clicked => {
+                expanded = !expanded
             }
         }
 
-        Rectangle {
-            visible: expanded;
-
-            @children
+        MaterialText {
+            horizontal-alignment: TextHorizontalAlignment.left;
+            vertical-alignment: TextVerticalAlignment.center;
+            text: title;
+            style: MaterialTypography.label_large;
         }
+    }
+
+    Rectangle {
+        visible: expanded;
+        height: expanded ? self.preferred-height : 0px;
+
+        @children
     }
 }

@@ -12,15 +12,14 @@
     <img alt="licence" src="https://badgen.net/github/license/ahsanu123/wojo">
   </a>
 </p>
-
-![wojo_logo](wojo.svg) 
-
 <p align="center">
   <b>
     🦷 Wojo - bluetooth client emulator app
   </b>
 </p>
 
+![wojo_logo](wojo.svg) 
+![wojo ss](carga-ss.png) 
 
 ### Logs 
 
@@ -28,6 +27,13 @@
 but to be able list all service and characteristic pc need to connect it first, then `bluest` able to read.
 - another try using `btleplug`, its seem more robust (at least from the example)
 - 3 April 2026 exploring btleplug structure and possibilities
+
+<details>
+  <summary>
+    test result 
+  </summary>
+
+
 ```shell
 running 1 test
 adapters: [Adapter { session: BluetoothSession, adapter: AdapterId { object_path: Path("/org/bluez/hci0\0") } }]
@@ -85,6 +91,9 @@ test ble::ble_tests::test_list_ble_adapters ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 10.11s
 ```
+  
+</details>
+
 ### 🎄 References
 
 - https://github.com/deviceplug/btleplug

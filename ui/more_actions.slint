@@ -1,0 +1,32 @@
+import { ElevatedCard } from "../material/ui/components/card.slint";
+import { Vertical, MaterialText, Icon } from "../material/material.slint";
+import { Characteristic } from "./models/characteristic.slint";
+import {
+    MaterialTypography,
+} from "../material/ui/styling/material_typography.slint";
+import {
+    CharacteristicPropertyFlag,
+} from "./models/characteristic_property_flag.slint";
+import { Icons } from "icons/icons.slint";
+
+export component MoreAction inherits VerticalLayout {
+    HorizontalLayout {
+        max-height: 60px;
+        VerticalLayout {
+            alignment: center;
+            Icon {
+                source: Icons.detail;
+                height: 30px;
+                width: 30px;
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            MaterialText {
+                text: "More Action";
+                style: MaterialTypography.title_large_bold;
+            }
+        }
+    }
+}

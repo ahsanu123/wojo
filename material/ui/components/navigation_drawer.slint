@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 import { Drawer, ModalDrawer, DrawerHeader } from "./drawer.slint";
-import { NavigationItem, NavigationGroup } from "../items/navigation_item.slint";
+import {
+    NavigationItem,
+    NavigationGroup,
+} from "../items/navigation_item.slint";
 import { HorizontalDivider } from "./divider.slint";
 import { StateLayerArea } from "./state_layer.slint";
 import { MaterialPalette } from "../styling/material_palette.slint";
@@ -37,7 +40,7 @@ component NavigationItemTemplate inherits BaseNavigationItemTemplate {
                 VerticalLayout {
                     alignment: center;
 
-                    if !root.has_icon && !root.has_selected_icon : Rectangle {
+                    if !root.has_icon && !root.has_selected_icon: Rectangle {
                         width: MaterialStyleMetrics.icon_size_24;
                         height: self.width;
 
@@ -49,12 +52,12 @@ component NavigationItemTemplate inherits BaseNavigationItemTemplate {
                         }
                     }
 
-                    if root.has_icon || root.has_selected_icon : Icon {
+                    if root.has_icon || root.has_selected_icon: Icon {
                         source: root.icon;
                         colorize: root.color;
 
                         states [
-                            selected when root.selected && root.has_selected_icon : {
+                            selected when root.selected && root.has_selected_icon: {
                                 source: root.selected_icon;
                             }
                         ]
@@ -69,7 +72,7 @@ component NavigationItemTemplate inherits BaseNavigationItemTemplate {
                     vertical_alignment: center;
                 }
 
-                if root.badge != "" : MaterialText {
+                if root.badge != "": MaterialText {
                     text: root.badge;
                     style: MaterialTypography.label_large;
                     color: root.color;
@@ -89,17 +92,23 @@ component NavigationItemTemplate inherits BaseNavigationItemTemplate {
             }
         }
 
-        animate background { duration: MaterialAnimations.opacity_duration; easing: MaterialAnimations.opacity_easing; }
+        animate background {
+            duration: MaterialAnimations.opacity_duration;
+            easing: MaterialAnimations.opacity_easing;
+        }
     }
 
     states [
-        selected when root.selected : {
+        selected when root.selected: {
             background_layer.background: MaterialPalette.secondary_container;
             root.color: MaterialPalette.on_secondary_container;
         }
     ]
 
-    animate color { duration: MaterialAnimations.opacity_duration; easing: MaterialAnimations.opacity_easing; }
+    animate color {
+        duration: MaterialAnimations.opacity_duration;
+        easing: MaterialAnimations.opacity_easing;
+    }
 }
 
 component NavigationGroupTemplate {
@@ -114,11 +123,11 @@ component NavigationGroupTemplate {
     VerticalLayout {
         alignment: start;
 
-        if root.title != 0 :  DrawerHeader {
+        if root.title != 0:  DrawerHeader {
             title: root.title;
         }
 
-        for item[index] in root.items : NavigationItemTemplate {
+        for item[index] in root.items: NavigationItemTemplate {
             icon: item.icon;
             selected_icon: item.selected_icon;
             text: item.text;
@@ -137,7 +146,7 @@ component NavigationGroupTemplate {
             }
         }
 
-        if root.has_divider : HorizontalDivider {}
+        if root.has_divider: HorizontalDivider { }
     }
 }
 
@@ -153,7 +162,7 @@ export component NavigationDrawer inherits Drawer {
     // accessible-label: root.title;
     accessible-item-count: root.groups.length;
 
-    for group[group_index] in root.groups : NavigationGroupTemplate {
+    for group[group_index] in root.groups: NavigationGroupTemplate {
         title: group.title;
         items: group.items;
         current_index: group_index == root.current_group ? root.current_index : -1;
@@ -171,7 +180,6 @@ export component NavigationDrawer inherits Drawer {
         if group_index < 0 || group_index >= root.groups.length || item_index < 0 || item_index >= root.groups[group_index].items.length {
             return;
         }
-
         root.current_group = group_index;
         root.current_index = item_index;
         root.selected(group_index, item_index);
@@ -188,7 +196,7 @@ export component ModalNavigationDrawer inherits ModalDrawer {
     // accessible-label: root.title;
     accessible-item-count: root.groups.length;
 
-    for group[group_index] in root.groups : NavigationGroupTemplate {
+    for group[group_index] in root.groups: NavigationGroupTemplate {
         title: group.title;
         items: group.items;
         current_index: group_index == root.current_group ? root.current_index : -1;
@@ -203,7 +211,6 @@ export component ModalNavigationDrawer inherits ModalDrawer {
         if group_index < 0 || group_index >= root.groups.length || item_index < 0 || item_index >= root.groups[group_index].items.length {
             return;
         }
-
         root.current_group = group_index;
         root.current_index = item_index;
         root.close();

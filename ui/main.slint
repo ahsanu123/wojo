@@ -20,18 +20,19 @@ import {
 export { DevicesStoreSlint }
 
 export component MainWindow inherits MaterialWindow {
-    width: 1200px;
+    width: 1600px;
     height: 800px;
 
     Vertical {
         padding: 0px;
 
         Horizontal {
-
+            height: root.height;
             SideNavigation { }
 
             VerticalDivider { }
-            // MainContent { }
+
+            MainContent { }
         }
     }
 }

@@ -1,10 +1,13 @@
 import {
     Characteristic,
 } from "./characteristic.slint";
+import { OptionString } from "../models/option_string.slint";
 
 // @rust-attr(derive(serde::Serialize, serde::Deserialize))
 export struct Service{
   uuid: string,
   primary: bool, 
+  name: OptionString,
+  description:OptionString,
   characteristics: [Characteristic],
 }

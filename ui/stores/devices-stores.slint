@@ -4,10 +4,16 @@ import {
 
 import { Peripheral } from "../models/peripheral.slint";
 
+// todo rename this to sidenavStore or similar
 export global DevicesStoreSlint {
     in-out property <[string]> adapterInfos;
     in-out property <[NavigationItem]> adapterInfoNavItems;
     in-out property <[Peripheral]> peripherals;
+    in-out property <[string]> adapters;
+
+    callback onPeripheralConnect(peripheralId: string);
+    callback onPeripheralDisconnect(peripheralId: string);
+    callback onPeripheralClicked(peripheralId: string);
 
     callback onRescan();
 }

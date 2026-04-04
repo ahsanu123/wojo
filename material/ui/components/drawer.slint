@@ -10,6 +10,7 @@ import { Modal } from "./modal.slint";
 
 export component DrawerHeader {
     in property <string> title;
+    in-out property <image> icon;
 
     min_height: max(MaterialStyleMetrics.size_56, title_label.min_width);
 
@@ -38,7 +39,7 @@ export component Drawer {
                 alignment: start;
                 padding: MaterialStyleMetrics.padding_12;
 
-                if root.title != "" : DrawerHeader {
+                if root.title != "": DrawerHeader {
                     width: 100%;
                     title: root.title;
                 }
