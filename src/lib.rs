@@ -3,6 +3,7 @@ use crate::{
     tasks::{ScannEvent, background_task, ble_scanner_task},
 };
 use btleplug::api::CentralEvent;
+use slint::Weak;
 use std::env;
 use tokio::sync::{
     OnceCell,
@@ -14,6 +15,7 @@ slint::include_modules!();
 pub(crate) mod ble;
 pub(crate) mod helpers;
 pub(crate) mod models;
+pub(crate) mod store_handler;
 pub(crate) mod stores;
 pub(crate) mod tasks;
 
@@ -22,8 +24,9 @@ pub enum ExtendedCentralEvent {
     Exit,
 }
 static CENTRAL_TX: OnceCell<Sender<ExtendedCentralEvent>> = OnceCell::const_new();
-// static CENTRAL_TX: OnceCell<Sender<CentralEvent>> = OnceCell::const_new();
 static SCAN_TX: OnceCell<Sender<ScannEvent>> = OnceCell::const_new();
+
+pub static MAINWINDOW_WEAK: OnceCell<Weak<MainWindow>> = OnceCell::const_new();
 
 pub trait InitTrait {
     fn init(&mut self) -> impl Future<Output = ()>;
@@ -39,6 +42,11 @@ pub async fn main() {
     CENTRAL_TX.set(central_tx).expect("fail to init tx");
 
     let main_window = MainWindow::new().expect("fail to create MainWindow");
+
+    MAINWINDOW_WEAK
+        .set(main_window.as_weak().clone())
+        .map_err(|_| "fail to set main_window_weak")
+        .unwrap();
 
     let main_window_weak = main_window.as_weak().clone();
 
