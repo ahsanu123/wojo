@@ -120,11 +120,14 @@ component CharacteristicCard inherits ElevatedCard {
                 HorizontalLayout {
                     padding-top: 10px;
                     padding-bottom: 10px;
+
                     TextField {
                         label: "Characteristic Description";
                         placeholder_text: "edit characteristic description";
                         trailing_icon: Icons.save;
                         supporting_text: "saved to local database";
+                        multiline: true;
+                        hidePlaceholder: true;
                     }
                 }
             }
@@ -195,6 +198,8 @@ component ListServicesCharacteristics inherits ScrollView {
                             placeholder_text: "edit service description";
                             trailing_icon: Icons.save;
                             supporting_text: "saved to local database";
+                            multiline: true;
+                            hidePlaceholder: true;
                         }
                     }
 

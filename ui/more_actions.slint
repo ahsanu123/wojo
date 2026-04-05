@@ -1,32 +1,231 @@
 import { ElevatedCard } from "../material/ui/components/card.slint";
-import { Vertical, MaterialText, Icon } from "../material/material.slint";
+import {
+    Vertical,
+    MaterialText,
+    Icon,
+    TextField,
+    IconButton,
+} from "../material/material.slint";
 import { Characteristic } from "./models/characteristic.slint";
+import { Icons } from "icons/icons.slint";
+import { MoreActionStoreSlint } from "./stores/more_actions_store.slint";
+import { ScrollView } from "../material/ui/components/scroll_view.slint";
 import {
     MaterialTypography,
 } from "../material/ui/styling/material_typography.slint";
 import {
     CharacteristicPropertyFlag,
 } from "./models/characteristic_property_flag.slint";
-import { Icons } from "icons/icons.slint";
 
-export component MoreAction inherits VerticalLayout {
-    HorizontalLayout {
-        max-height: 60px;
+import {
+    globalCharacteristicPropertyFlag,
+} from "./models/characteristic_property_flag.slint";
+import { HorizontalDivider } from "../material/ui/components/divider.slint";
+import { FilledButton } from "../material/ui/components/filled_button.slint";
+import { Button } from "std-widgets.slint";
+
+global util {
+    public pure function characteristicName() -> string {
+        if (MoreActionStoreSlint.selectedCharacteristic.hasValue && MoreActionStoreSlint.selectedCharacteristic.value.name.hasValue) {
+            return MoreActionStoreSlint.selectedCharacteristic.value.name.value + " " + MoreActionStoreSlint.selectedCharacteristic.value.uuid;
+        }
+        return MoreActionStoreSlint.selectedCharacteristic.value.uuid;
+    }
+}
+
+component Header inherits HorizontalLayout {
+
+    max-height: 60px;
+    VerticalLayout {
+        alignment: center;
+        Icon {
+            source: Icons.detail;
+            height: 30px;
+            width: 30px;
+        }
+    }
+
+    VerticalLayout {
+        alignment: center;
+        MaterialText {
+            text: util.characteristicName() + " Char Action";
+            style: MaterialTypography.title_large_bold;
+        }
+    }
+}
+
+component CharacteristicAction {
+
+    if MoreActionStoreSlint.selectedCharacteristic.hasValue: ScrollView {
+
+        VerticalLayout {
+            alignment: start;
+
+            HorizontalLayout {
+
+                VerticalLayout {
+                    alignment: center;
+                    padding-right: 15px;
+                    Icon {
+                        source: Icons.binoculars;
+                    }
+                }
+
+                charTitle := MaterialText {
+                    text: util.characteristicName();
+                    style: MaterialTypography.title_medium;
+                }
+            }
+
+            descriptionText := MaterialText {
+                style: MaterialTypography.body_medium;
+            }
+
+            states [
+                hasCharacteristicDescription when MoreActionStoreSlint.selectedCharacteristic.hasValue: {
+                    descriptionText.text: MoreActionStoreSlint.selectedCharacteristic.value.description.value;
+                }
+                hasCharacteristicDescription when !MoreActionStoreSlint.selectedCharacteristic.hasValue: {
+                    descriptionText.text: "No Characteristic Description.";
+                }
+            ]
+
+            HorizontalLayout {
+                padding-top: 10px;
+
+                VerticalLayout {
+                    alignment: center;
+                    padding-right: 15px;
+                    Icon {
+                        source: Icons.actions;
+                    }
+                }
+
+                MaterialText {
+                    text: "Actions";
+                    style: MaterialTypography.title_large_bold;
+                }
+            }
+
+            for flag in MoreActionStoreSlint.selectedCharacteristic.value.properties: VerticalLayout {
+                padding-left: 15px;
+                padding-bottom: 5px;
+                padding-top: 5px;
+
+                HorizontalLayout {
+                    VerticalLayout {
+                        alignment: center;
+                        padding-right: 15px;
+                        Icon {
+                            source: Icons.hollowDot;
+                        }
+                    }
+
+                    MaterialText {
+                        text: globalCharacteristicPropertyFlag.toString(flag);
+                        style: MaterialTypography.title_medium;
+                    }
+                }
+
+                if flag == CharacteristicPropertyFlag.BROADCAST: VerticalLayout {
+                    padding-left: 25px;
+
+                    TextField {
+                        label: "Broadcast";
+                        placeholder_text: "broadcasting";
+                        trailing_icon: Icons.send;
+                        supporting_text: "update broadcast characteristic";
+                    }
+                }
+
+                if flag == CharacteristicPropertyFlag.READ: VerticalLayout {
+                    padding-left: 25px;
+
+                    HorizontalLayout {
+                        alignment: space-between;
+
+                        VerticalLayout {
+                            alignment: center;
+                            MaterialText {
+                                text: "raw value will appears here";
+                            }
+                        }
+
+                        FilledButton {
+                            text: "Read";
+                        }
+                    }
+                }
+
+                if flag == CharacteristicPropertyFlag.WRITE: VerticalLayout {
+                    padding-left: 25px;
+                    HorizontalLayout {
+                        alignment: start;
+                        VerticalLayout {
+                            alignment: center;
+                            MaterialText {
+                                text: "Data to write";
+                                style: MaterialTypography.title_medium;
+                            }
+                        }
+
+                        IconButton {
+                            icon: Icons.add;
+                        }
+                    }
+
+                    for buffer[index] in MoreActionStoreSlint.writeBuffer: VerticalLayout {
+                        padding-top: 10px;
+                        TextField {
+                            label: "Data Buffer " + (index + 1);
+                            text: buffer;
+                            placeholder_text: "broadcasting";
+                        }
+                    }
+
+                    VerticalLayout {
+                        padding-top: 15px;
+                        FilledButton {
+                            width: 200px;
+                            text: "Write";
+                        }
+                    }
+                }
+
+                HorizontalDivider { }
+            }
+            emptySpace := Rectangle {
+                height: 200px;
+            }
+        }
+    }
+
+    if !MoreActionStoreSlint.selectedCharacteristic.hasValue: HorizontalLayout {
+        max-height: 40px;
         VerticalLayout {
             alignment: center;
+            padding-right: 15px;
             Icon {
-                source: Icons.detail;
-                height: 30px;
-                width: 30px;
+                source: Icons.synchronize;
             }
         }
 
         VerticalLayout {
             alignment: center;
             MaterialText {
-                text: "More Action";
-                style: MaterialTypography.title_large_bold;
+                text: "no characteristic selected";
+                style: MaterialTypography.title_medium;
             }
         }
     }
+}
+
+export component MoreAction inherits VerticalLayout {
+    max-width: 500px;
+    padding-left: 5px;
+    padding-right: 5px;
+    height: 800px;
+    Header { }
+
+    CharacteristicAction { }
 }

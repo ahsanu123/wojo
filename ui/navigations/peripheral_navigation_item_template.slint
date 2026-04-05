@@ -93,15 +93,8 @@ export component PeripheralNavigationItemTemplate inherits BaseNavigationItemTem
                     vertical_alignment: center;
                 }
 
-                HorizontalLayout {
-                    FilledButton {
-                        text: isConnected ? "disconnect" : "connect";
-                    }
-
-                    IconButton {
-                        icon: Icons.gear_setting;
-                        tooltip: "setting";
-                    }
+                FilledButton {
+                    text: isConnected ? "disconnect" : "connect";
                 }
 
                 if root.badge != "": MaterialText {

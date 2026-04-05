@@ -1,0 +1,61 @@
+import {
+    NavigationItem,
+} from "../../material/ui/items/navigation_item.slint";
+import {
+    CharacteristicPropertyFlag,
+} from "../models/characteristic_property_flag.slint";
+import { Characteristic } from "../models/characteristic.slint";
+
+export enum SubscribedValueType {
+  Int, 
+  String,
+  // etc...
+}
+
+export struct SubscribedValue {
+  type: SubscribedValueType,
+  intVal: int,
+  stringVal: string,
+}
+
+export struct OptionCharacteristic {
+  hasValue: bool,
+  value: Characteristic,
+}
+
+// todo rename this to sidenavStore or similar
+export global MoreActionStoreSlint {
+    in-out property <OptionCharacteristic> selectedCharacteristic: {
+        hasValue: true,
+        value: {
+            uuid: "0x78FA",
+            name: { hasValue: false, value: "Heart Rate" },
+            description: { hasValue: false, value: "Characteristic for heart rate of device" },
+            properties: [
+                CharacteristicPropertyFlag.BROADCAST,
+                CharacteristicPropertyFlag.READ,
+                CharacteristicPropertyFlag.WRITE_WITHOUT_RESPONSE,
+                CharacteristicPropertyFlag.WRITE,
+                CharacteristicPropertyFlag.NOTIFY,
+                CharacteristicPropertyFlag.INDICATE,
+                CharacteristicPropertyFlag.AUTHENTICATED_SIGNED_WRITES,
+                CharacteristicPropertyFlag.EXTENDED_PROPERTIES
+            ],
+        }
+    };
+    in-out property <[int]> readResult;
+    in-out property <[int]> writeBuffer: [
+        8192,
+        1272,
+        2819,
+        2712,
+    ];
+    in-out property <bool> isSubscribing;
+
+    in-out property <[SubscribedValue]> subscribedValue;
+
+    callback onReadSelectedChracteristic();
+    callback onWriteSelectedCharacteristic();
+    callback onAddBufferData(data: int);
+    callback onSubscribeSelectedCharacteristic();
+}

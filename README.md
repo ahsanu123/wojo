@@ -19,7 +19,7 @@
 </p>
 
 ![wojo_logo](wojo.svg) 
-![wojo ss](carga-ss.png) 
+![wojo ss](wojo-ss.png) 
 
 ### Logs 
 
