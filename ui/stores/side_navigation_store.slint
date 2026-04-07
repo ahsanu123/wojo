@@ -1,0 +1,33 @@
+import {
+    NavigationItem,
+} from "../../material/ui/items/navigation_item.slint";
+
+import { Peripheral } from "../models/peripheral.slint";
+
+export global SideNavigationStore {
+    in-out property <[string]> adapters: ["hci0"];
+    in-out property <[Peripheral]> peripherals: [
+        {
+            localname: "Infinix hahahihi",
+            peripheralId: "1232",
+            address: "askdfjls-asdfljasdf-j",
+            isConnected: true,
+            rssi: -20,
+        },
+        {
+            localname: "Carga",
+            peripheralId: "1234",
+            address: "askdfjls-asdfljasdf-j",
+            isConnected: false,
+            rssi:-19,
+        },
+    ];
+
+    in-out property <Peripheral> selected_peripheral;
+
+    callback onPeripheralConnect(peripheralId: string);
+    callback onPeripheralDisconnect(peripheralId: string);
+    callback onPeripheralClicked(peripheralId: string);
+
+    callback onRescan();
+}

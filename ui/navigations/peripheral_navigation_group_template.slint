@@ -1,11 +1,42 @@
 import { Peripheral } from "../models/peripheral.slint";
-import { DrawerHeader } from "../../material/ui/components/drawer.slint";
-import { HorizontalDivider } from "../../material/material.slint";
+import {
+    HorizontalDivider,
+    IconButton,
+    MaterialText,
+} from "../../material/material.slint";
 import { Icons } from "../icons/icons.slint";
-import { DevicesStoreSlint } from "../stores/devices-stores.slint";
+import { SideNavigationStore } from "../stores/side_navigation_store.slint";
 import {
     PeripheralNavigationItemTemplate,
 } from "peripheral_navigation_item_template.slint";
+import {
+    MaterialTypography,
+} from "../../material/ui/styling/material_typography.slint";
+import {
+    MaterialPalette,
+} from "../../material/ui/styling/material_palette.slint";
+import {
+    MaterialStyleMetrics,
+} from "../../material/ui/styling/material_style_metrics.slint";
+import {
+    MaterialAnimations,
+} from "../../material/ui/styling/material_animations.slint";
+
+component PeripheralDrawerHeader {
+    in property <string> title;
+    in-out property <image> icon;
+
+    min_height: max(MaterialStyleMetrics.size_56, title_label.min_width);
+
+    title_label := MaterialText {
+        x: MaterialStyleMetrics.padding_16;
+        width: root.width - MaterialStyleMetrics.padding_16;
+        text: root.title;
+        color: MaterialPalette.on_surface_variant;
+        vertical_alignment: center;
+        style: MaterialTypography.title_medium_bold;
+    }
+}
 
 export component PeripheralNavigationGroupTemplate {
     in property <string> title;
@@ -18,8 +49,17 @@ export component PeripheralNavigationGroupTemplate {
     VerticalLayout {
         alignment: start;
 
-        if root.title != 0:  DrawerHeader {
-            title: root.title;
+        HorizontalLayout {
+            padding-right: 20px;
+            padding-bottom: 10px;
+
+            if root.title != 0:  PeripheralDrawerHeader {
+                title: root.title;
+            }
+            IconButton {
+                icon: Icons.synchronize;
+                tooltip: "Rescan";
+            }
         }
 
         for item[index] in root.peripherals: PeripheralNavigationItemTemplate {
@@ -32,13 +72,13 @@ export component PeripheralNavigationGroupTemplate {
             peripheralId: item.peripheralId;
 
             onConnect(peripheralId) => {
-                DevicesStoreSlint.onPeripheralConnect(peripheralId);
+                SideNavigationStore.onPeripheralConnect(peripheralId);
             }
             onDisconnect(peripheralId) => {
-                DevicesStoreSlint.onPeripheralDisconnect(peripheralId);
+                SideNavigationStore.onPeripheralDisconnect(peripheralId);
             }
             onClicked(peripheralId) => {
-                DevicesStoreSlint.onPeripheralClicked(peripheralId);
+                SideNavigationStore.onPeripheralClicked(peripheralId);
             }
         }
 

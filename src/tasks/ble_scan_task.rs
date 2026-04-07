@@ -10,7 +10,7 @@ pub enum ScannEvent {
     Start,
     Stop,
     Restart,
-    Break,
+    Exit,
 }
 
 pub async fn ble_scanner_task() {
@@ -38,7 +38,7 @@ pub async fn ble_scanner_task() {
     while let Some(cmd) = scan_cmd_rx.recv().await {
         println!("some scan event");
         match cmd {
-            ScannEvent::Break => {
+            ScannEvent::Exit => {
                 break;
             }
             ScannEvent::Start => {

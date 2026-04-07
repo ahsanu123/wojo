@@ -1,12 +1,9 @@
-use crate::helpers::set_ui_state::set_ui_state;
-use crate::{DevicesStoreSlint, MainWindow, NavigationItem, models, slint_generatedMainWindow};
+use crate::store_handler::SideEffectVal;
+use crate::{models, slint_generatedMainWindow};
 use btleplug::api::{Peripheral as _, PeripheralProperties};
 use btleplug::platform::{Adapter, Peripheral, PeripheralId};
-use slint::{ComponentHandle, ToSharedString, Weak};
-use slint::{Image, ModelRc, VecModel};
+use slint::ToSharedString;
 use std::collections::HashMap;
-
-mod initialization;
 
 pub trait DevicesStoreTrait {
     fn set_adapters(&mut self, adapters: Vec<Adapter>) -> impl Future<Output = ()>;
@@ -41,54 +38,18 @@ pub trait DevicesStoreTrait {
 #[derive(Default)]
 pub struct DevicesStore {
     peripheral_str_id_map: HashMap<String, PeripheralId>,
-    adapters: Vec<Adapter>,
+    adapters: SideEffectVal<Vec<Adapter>>,
     peripherals_model_map: HashMap<PeripheralId, models::Peripheral>,
     peripherals_map: HashMap<PeripheralId, Peripheral>,
-    weak_main_window: Weak<MainWindow>,
-}
-
-impl DevicesStore {
-    pub fn set_weak_main_window(&mut self, weak_main_window: Weak<MainWindow>) {
-        self.weak_main_window = weak_main_window;
-    }
 }
 
 impl DevicesStoreTrait for DevicesStore {
     async fn set_adapters(&mut self, adapters: Vec<Adapter>) {
-        self.adapters = adapters;
+        self.adapters.set(adapters).await.expect("fail to set");
     }
 
     async fn set_adapter_infos(&mut self, adapters: Vec<String>) {
-        let result = set_ui_state(&self.weak_main_window, |main_window| {
-            let device_stores = main_window.global::<DevicesStoreSlint>();
-
-            let nav_items = ModelRc::new(VecModel::from(
-                adapters
-                    .into_iter()
-                    .map(|item| {
-                        let adapter_name: Vec<String> =
-                            item.split(' ').map(|s| s.to_string()).collect();
-
-                        NavigationItem {
-                            text: adapter_name.first().unwrap().into(),
-                            badge: "O".into(),
-                            icon: Image::load_from_svg_data(include_bytes!(
-                                "../../ui/slint-logo.svg"
-                            ))
-                            .unwrap(),
-                            selected_icon: Image::default(),
-                            show_badge: false,
-                        }
-                    })
-                    .collect::<Vec<_>>(),
-            ));
-            device_stores.set_adapterInfoNavItems(nav_items);
-        });
-
-        match result {
-            Ok(_) => {}
-            Err(_) => println!("fail to set ui state"),
-        }
+        todo!()
     }
 
     async fn set_peripherals_map(&mut self, id: PeripheralId, peripheral: &Peripheral) {
@@ -151,18 +112,6 @@ impl DevicesStoreTrait for DevicesStore {
                 rssi: peripheral.properties.rssi.unwrap_or(0).into(),
             })
             .collect::<Vec<_>>();
-
-        println!("ui_peripheral length: {}", ui_peripheral.len());
-        let result = set_ui_state(&self.weak_main_window, move |main_window| {
-            let device_stores = main_window.global::<DevicesStoreSlint>();
-            let peripherals = ModelRc::new(VecModel::from(ui_peripheral));
-            device_stores.set_peripherals(peripherals);
-        });
-
-        match result {
-            Ok(_) => {}
-            Err(_) => println!("fail to set ui state"),
-        }
     }
 
     async fn connect(&mut self, id: String) {

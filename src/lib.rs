@@ -1,5 +1,5 @@
 use crate::{
-    stores::DEVICES_STORE,
+    stores::{SIDE_NAV_STORE, side_navigation_store::SideNavigationStoreTrait},
     tasks::{ScannEvent, background_task, ble_scanner_task},
 };
 use btleplug::api::CentralEvent;
@@ -48,20 +48,12 @@ pub async fn main() {
         .map_err(|_| "fail to set main_window_weak")
         .unwrap();
 
-    let main_window_weak = main_window.as_weak().clone();
-
-    {
-        let mut store = DEVICES_STORE.lock().await;
-        store.set_weak_main_window(main_window_weak);
-        store.init().await;
-    }
-
     let ble_scanner_task_handle = tokio::spawn(async move { ble_scanner_task().await });
     let background_task_handle = tokio::spawn(async move { background_task(central_rx).await });
 
-    let dev_slint_store = main_window.global::<DevicesStoreSlint>();
+    let sidenav_store = main_window.global::<SideNavigationStore>();
 
-    dev_slint_store.on_onRescan(|| {
+    sidenav_store.on_onRescan(|| {
         if let Some(scan_tx) = SCAN_TX.get() {
             scan_tx
                 .try_send(ScannEvent::Restart)
@@ -69,20 +61,27 @@ pub async fn main() {
         }
     });
 
+    sidenav_store.on_onPeripheralConnect(|peripheral_id| {
+        tokio::spawn(async move {
+            let mut store = SIDE_NAV_STORE.lock().await;
+            let _ = store.handle_on_connect(peripheral_id.into()).await;
+        });
+    });
+
     main_window.run().expect("fail to run window");
 
     if let Some(scan_tx) = SCAN_TX.get() {
         scan_tx
-            .send(ScannEvent::Break)
+            .send(ScannEvent::Exit)
             .await
-            .expect("fail to send rescan event");
+            .expect("fail to send break event");
     }
 
     if let Some(scan_tx) = CENTRAL_TX.get() {
         scan_tx
             .send(ExtendedCentralEvent::Exit)
             .await
-            .expect("fail to send rescan event");
+            .expect("fail to send exit event");
     }
 
     ble_scanner_task_handle
