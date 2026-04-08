@@ -3,9 +3,13 @@ import {
 } from "../../material/ui/items/navigation_item.slint";
 
 import { Peripheral } from "../models/peripheral.slint";
+import { AdapterInfo } from "../models/adapter_info.slint";
 
 export global SideNavigationStore {
-    in-out property <[string]> adapters: ["hci0"];
+    in-out property <[AdapterInfo]> adapterInfos: [{
+        name: "mock hci0",
+        long_name: "mock hci0 (usb:v1D6Bp0246d0556)",
+    }];
     in-out property <[Peripheral]> peripherals: [
         {
             localname: "Infinix hahahihi",

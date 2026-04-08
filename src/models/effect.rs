@@ -1,9 +1,7 @@
-use crate::{
-    MAINWINDOW_WEAK, SideNavigationStore, helpers::set_ui_state::set_ui_state, models::AdapterInfo,
-};
-use slint::{ComponentHandle as _, ModelRc, SharedString, VecModel};
+use crate::MAINWINDOW_WEAK;
 use std::marker::PhantomData;
 
+#[derive(Debug)]
 pub enum StoreHandlerErr {
     FailToSet,
     FailToGet,

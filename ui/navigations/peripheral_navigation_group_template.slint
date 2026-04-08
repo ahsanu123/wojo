@@ -22,24 +22,33 @@ import {
     MaterialAnimations,
 } from "../../material/ui/styling/material_animations.slint";
 
-component PeripheralDrawerHeader {
+component PeripheralDrawerHeader inherits VerticalLayout {
     in property <string> title;
+    in property <string> subtitle;
     in-out property <image> icon;
 
     min_height: max(MaterialStyleMetrics.size_56, title_label.min_width);
 
     title_label := MaterialText {
         x: MaterialStyleMetrics.padding_16;
-        width: root.width - MaterialStyleMetrics.padding_16;
         text: root.title;
         color: MaterialPalette.on_surface_variant;
         vertical_alignment: center;
         style: MaterialTypography.title_medium_bold;
     }
+
+    MaterialText {
+        x: MaterialStyleMetrics.padding_16;
+        text: root.subtitle;
+        color: MaterialPalette.on_surface_variant;
+        vertical_alignment: center;
+        style: MaterialTypography.body_small;
+    }
 }
 
 export component PeripheralNavigationGroupTemplate {
     in property <string> title;
+    in property <string> subtitle;
     in property <[Peripheral]> peripherals;
     in property <int> current_index: -1;
     in property <bool> has_divider;
@@ -52,10 +61,16 @@ export component PeripheralNavigationGroupTemplate {
         HorizontalLayout {
             padding-right: 20px;
             padding-bottom: 10px;
+            alignment: space-between;
 
-            if root.title != 0:  PeripheralDrawerHeader {
-                title: root.title;
+            VerticalLayout {
+                alignment: center;
+                if root.title != 0:  PeripheralDrawerHeader {
+                    title: root.title;
+                    subtitle: root.subtitle;
+                }
             }
+
             IconButton {
                 icon: Icons.synchronize;
                 tooltip: "Rescan";

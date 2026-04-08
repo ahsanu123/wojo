@@ -68,8 +68,9 @@ export component SideNavigation inherits Vertical {
         VerticalLayout {
             alignment: start;
 
-            for adapter in SideNavigationStore.adapters: PeripheralNavigationGroupTemplate {
-                title: adapter + " Devices";
+            for adapterInfo in SideNavigationStore.adapterInfos: PeripheralNavigationGroupTemplate {
+                title: adapterInfo.name + " Devices";
+                subtitle: adapterInfo.long_name;
                 peripherals: SideNavigationStore.peripherals;
             }
         }

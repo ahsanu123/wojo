@@ -1,8 +1,9 @@
 use crate::{
-    models::{AdapterInfo, Effect},
+    models::{AdapterInfo, Effect, ToAdapterInfosTrait},
     slint_generatedMainWindow,
     stores::StoreErr,
 };
+use btleplug::platform::Adapter;
 use slint_generatedMainWindow::Peripheral as PeripheralSlint;
 
 mod adapter_info_handler;
@@ -18,14 +19,19 @@ pub use store_trait::*;
 
 #[derive(Default)]
 pub struct SideNavigationStore {
-    pub selected_peripheral: Effect<PeripheralSlint, SelectedPeripheralEffectHandler>,
-    pub peripherals: Effect<Vec<PeripheralSlint>, PeripheralSlintEffectHandler>,
-    pub adapters: Effect<Vec<AdapterInfo>, AdaptersEffectHandler>,
+    selected_peripheral: Effect<PeripheralSlint, SelectedPeripheralEffectHandler>,
+    peripherals: Effect<Vec<PeripheralSlint>, PeripheralSlintEffectHandler>,
+    adapter_infos: Effect<Vec<AdapterInfo>, AdapterInfosEffectHandler>,
 }
 
 impl SideNavigationStore {
-    pub fn set_adapters(&mut self, adapters: Effect<Vec<AdapterInfo>, AdaptersEffectHandler>) {
-        self.adapters = adapters;
+    pub async fn set_adapters(&mut self, adapters: &Vec<Adapter>) {
+        let adapter_infos = adapters.to_adapter_infos().await;
+
+        self.adapter_infos
+            .set(adapter_infos)
+            .await
+            .expect("fail to set adapters");
     }
 }
 

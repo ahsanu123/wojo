@@ -3,27 +3,24 @@ use slint::{ComponentHandle as _, ModelRc, SharedString, VecModel};
 use crate::{
     SideNavigationStore,
     helpers::set_ui_state::set_ui_state,
-    models::{AdapterInfo, StoreHandlerErr, StoreHandlerTrait},
+    models::{AdapterInfo, AdapterInfoToSlintAdapterInfoTrait, StoreHandlerErr, StoreHandlerTrait},
 };
 
 #[derive(Default)]
-pub struct AdaptersEffectHandler;
+pub struct AdapterInfosEffectHandler;
 
-impl StoreHandlerTrait<Vec<AdapterInfo>> for AdaptersEffectHandler {
+impl StoreHandlerTrait<Vec<AdapterInfo>> for AdapterInfosEffectHandler {
     async fn on_set(
         window_weak: &slint::Weak<crate::MainWindow>,
         value: Vec<AdapterInfo>,
     ) -> Result<(), StoreHandlerErr> {
-        let adapters: Vec<String> = value.iter().map(|item| item.name.clone()).collect();
-
         set_ui_state(window_weak, move |main_window| {
             let sidenav_store = main_window.global::<SideNavigationStore>();
 
-            let vecmodel_adapters: VecModel<SharedString> =
-                adapters.iter().map(|item| item.into()).collect();
+            let vecmodel_adapter_info = value.to_vecmodel_adapter_info();
+            let modelrc = ModelRc::new(vecmodel_adapter_info);
 
-            let modelrc = ModelRc::new(vecmodel_adapters);
-            sidenav_store.set_adapters(modelrc);
+            sidenav_store.set_adapterInfos(modelrc);
         })
         .map_err(|_| StoreHandlerErr::FailToSet)?;
 

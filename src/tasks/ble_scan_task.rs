@@ -1,6 +1,7 @@
 use crate::{
-    CENTRAL_TX, ExtendedCentralEvent, InitTrait as _, SCAN_TX, ble::ble_manager,
-    stores::DEVICES_STORE,
+    CENTRAL_TX, ExtendedCentralEvent, InitTrait as _, SCAN_TX,
+    ble::ble_manager,
+    stores::{DEVICES_STORE, SIDE_NAV_STORE},
 };
 use btleplug::api::{Central, Manager, ScanFilter};
 use futures::StreamExt;
@@ -19,6 +20,9 @@ pub async fn ble_scanner_task() {
     SCAN_TX.set(scann_cmd_tx).expect("fail to init scann tx");
 
     let adapters = ble_manager().await.adapters().await.unwrap();
+    let mut side_nav_store = SIDE_NAV_STORE.lock().await;
+    side_nav_store.set_adapters(&adapters).await;
+
     let central = adapters.first().unwrap();
 
     let mut events = central.events().await.expect("fail to get central events");
