@@ -15,7 +15,6 @@ slint::include_modules!();
 pub(crate) mod ble;
 pub(crate) mod helpers;
 pub(crate) mod models;
-pub(crate) mod store_handler;
 pub(crate) mod stores;
 pub(crate) mod tasks;
 

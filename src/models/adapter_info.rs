@@ -1,4 +1,5 @@
+#[derive(Clone)]
 pub struct AdapterInfo {
-    name: String,
-    long_name: String,
+    pub name: String,
+    pub long_name: String,
 }

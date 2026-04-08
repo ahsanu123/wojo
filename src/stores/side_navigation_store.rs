@@ -1,36 +1,32 @@
 use crate::{
-    models::AdapterInfo, slint_generatedMainWindow, store_handler::SideEffectVal, stores::StoreErr,
+    models::{AdapterInfo, Effect},
+    slint_generatedMainWindow,
+    stores::StoreErr,
 };
+use slint_generatedMainWindow::Peripheral as PeripheralSlint;
 
-pub trait SideNavigationStoreTrait {
-    fn handle_on_rescan_all(&mut self) -> impl Future<Output = Result<(), StoreErr>>;
+mod adapter_info_handler;
+mod peripheral_slint_handler;
+mod selected_peripheral_handler;
+mod store_trait;
 
-    fn handle_on_connect(
-        &mut self,
-        peripheral_id: String,
-    ) -> impl Future<Output = Result<(), StoreErr>>;
+use adapter_info_handler::*;
+use peripheral_slint_handler::*;
+use selected_peripheral_handler::*;
 
-    fn handle_on_disconnect(
-        &mut self,
-        peripheral_id: String,
-    ) -> impl Future<Output = Result<(), StoreErr>>;
-
-    fn handle_on_rescan_adapter(
-        &mut self,
-        adapter_id: String,
-    ) -> impl Future<Output = Result<(), StoreErr>>;
-
-    fn handle_on_peripheral_clicked(
-        &mut self,
-        peripheral_id: String,
-    ) -> impl Future<Output = Result<(), StoreErr>>;
-}
+pub use store_trait::*;
 
 #[derive(Default)]
 pub struct SideNavigationStore {
-    pub selected_peripheral: SideEffectVal<slint_generatedMainWindow::Peripheral>,
-    pub peripherals: SideEffectVal<Vec<slint_generatedMainWindow::Peripheral>>,
-    pub adapters: SideEffectVal<Vec<AdapterInfo>>,
+    pub selected_peripheral: Effect<PeripheralSlint, SelectedPeripheralEffectHandler>,
+    pub peripherals: Effect<Vec<PeripheralSlint>, PeripheralSlintEffectHandler>,
+    pub adapters: Effect<Vec<AdapterInfo>, AdaptersEffectHandler>,
+}
+
+impl SideNavigationStore {
+    pub fn set_adapters(&mut self, adapters: Effect<Vec<AdapterInfo>, AdaptersEffectHandler>) {
+        self.adapters = adapters;
+    }
 }
 
 impl SideNavigationStoreTrait for SideNavigationStore {

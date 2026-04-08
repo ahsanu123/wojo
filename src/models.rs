@@ -1,7 +1,7 @@
 mod adapter_info;
-mod item;
+mod effect;
 mod peripheral;
 
 pub use adapter_info::*;
-pub use item::*;
+pub use effect::*;
 pub use peripheral::*;
