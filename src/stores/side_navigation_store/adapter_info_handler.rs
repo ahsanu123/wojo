@@ -1,9 +1,9 @@
-use slint::{ComponentHandle as _, ModelRc, SharedString, VecModel};
+use slint::{ComponentHandle as _, ModelRc};
 
 use crate::{
     SideNavigationStore,
     helpers::set_ui_state::set_ui_state,
-    models::{AdapterInfo, AdapterInfoToSlintAdapterInfoTrait, StoreHandlerErr, StoreHandlerTrait},
+    models::{AdapterInfo, StoreHandlerErr, StoreHandlerTrait, ToSlintModel},
 };
 
 #[derive(Default)]
@@ -17,7 +17,7 @@ impl StoreHandlerTrait<Vec<AdapterInfo>> for AdapterInfosEffectHandler {
         set_ui_state(window_weak, move |main_window| {
             let sidenav_store = main_window.global::<SideNavigationStore>();
 
-            let vecmodel_adapter_info = value.to_vecmodel_adapter_info();
+            let vecmodel_adapter_info = value.to_slint_model();
             let modelrc = ModelRc::new(vecmodel_adapter_info);
 
             sidenav_store.set_adapterInfos(modelrc);

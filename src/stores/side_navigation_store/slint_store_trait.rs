@@ -1,6 +1,6 @@
 use crate::stores::StoreErr;
 
-pub trait SideNavigationStoreTrait {
+pub trait SideNavigationSlintStoreTrait {
     fn handle_on_rescan_all(&mut self) -> impl Future<Output = Result<(), StoreErr>>;
 
     fn handle_on_connect(

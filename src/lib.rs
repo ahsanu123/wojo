@@ -1,5 +1,5 @@
 use crate::{
-    stores::{SIDE_NAV_STORE, side_navigation_store::SideNavigationStoreTrait},
+    stores::{SIDE_NAV_STORE, side_navigation_store::SideNavigationSlintStoreTrait},
     tasks::{ScannEvent, background_task, ble_scanner_task},
 };
 use btleplug::api::CentralEvent;

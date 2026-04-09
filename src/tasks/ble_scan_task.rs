@@ -21,7 +21,7 @@ pub async fn ble_scanner_task() {
 
     let adapters = ble_manager().await.adapters().await.unwrap();
     let mut side_nav_store = SIDE_NAV_STORE.lock().await;
-    side_nav_store.set_adapters(&adapters).await;
+    side_nav_store.set_adapter_infos(&adapters).await;
 
     let central = adapters.first().unwrap();
 

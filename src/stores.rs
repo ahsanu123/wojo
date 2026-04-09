@@ -13,6 +13,7 @@ pub mod side_navigation_store;
 pub enum StoreErr {
     FailToSet,
     FailToGet,
+    Custom(String),
 }
 
 pub static SIDE_NAV_STORE: LazyLock<Mutex<SideNavigationStore>> =
