@@ -11,11 +11,9 @@ pub trait StoreHandlerTrait<T> {
     fn on_set(
         window_weak: &slint::Weak<crate::MainWindow>,
         value: T,
-    ) -> impl Future<Output = Result<(), StoreHandlerErr>>;
+    ) -> Result<(), StoreHandlerErr>;
 
-    fn on_get(
-        window_weak: &slint::Weak<crate::MainWindow>,
-    ) -> impl Future<Output = Result<T, StoreHandlerErr>>;
+    fn on_get(window_weak: &slint::Weak<crate::MainWindow>) -> Result<T, StoreHandlerErr>;
 }
 
 #[derive(Default)]
@@ -38,18 +36,21 @@ where
         self.value = value.clone();
 
         if let Some(window_weak) = MAINWINDOW_WEAK.get() {
-            H::on_set(window_weak, value).await?;
+            H::on_set(window_weak, value)?;
         };
 
         Ok(())
     }
 
     pub async fn get(&mut self) -> Result<T, StoreHandlerErr> {
-        // TODO: think better in here
         if let Some(window_weak) = MAINWINDOW_WEAK.get() {
-            H::on_get(window_weak).await?;
+            return Ok(H::on_get(window_weak)?);
         };
 
+        Err(StoreHandlerErr::FailToGet)
+    }
+
+    pub fn get_internal_value(&self) -> Result<T, StoreHandlerErr> {
         Ok(self.value.clone())
     }
 }
@@ -69,7 +70,7 @@ where
         }
 
         if let Some(window_weak) = MAINWINDOW_WEAK.get() {
-            H::on_set(window_weak, self.value.clone()).await?;
+            H::on_set(window_weak, self.value.clone())?;
         };
 
         Ok(())

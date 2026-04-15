@@ -1,4 +1,5 @@
 use crate::{
+    MainWindow,
     models::{StoreHandlerErr, StoreHandlerTrait},
     slint_generatedMainWindow,
 };
@@ -9,16 +10,14 @@ use slint_generatedMainWindow::Peripheral as PeripheralSlint;
 pub struct SelectedPeripheralEffectHandler;
 
 impl StoreHandlerTrait<PeripheralSlint> for SelectedPeripheralEffectHandler {
-    async fn on_set(
-        window_weak: &Weak<crate::MainWindow>,
+    fn on_set(
+        window_weak: &Weak<MainWindow>,
         value: PeripheralSlint,
     ) -> Result<(), StoreHandlerErr> {
         todo!()
     }
 
-    async fn on_get(
-        window_weak: &Weak<crate::MainWindow>,
-    ) -> Result<PeripheralSlint, StoreHandlerErr> {
+    fn on_get(window_weak: &Weak<MainWindow>) -> Result<PeripheralSlint, StoreHandlerErr> {
         todo!()
     }
 }

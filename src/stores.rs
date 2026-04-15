@@ -10,6 +10,7 @@ pub mod devices_store;
 pub mod global_stores;
 pub mod side_navigation_store;
 
+#[derive(Debug)]
 pub enum StoreErr {
     FailToSet,
     FailToGet,

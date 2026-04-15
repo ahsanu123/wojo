@@ -1,25 +1,22 @@
 use crate::{
+    MainWindow,
     models::{StoreHandlerErr, StoreHandlerTrait},
-    slint_generatedMainWindow,
+    slint_generatedMainWindow::Peripheral,
 };
 use slint::Weak;
 
 #[derive(Default)]
 pub struct PeripheralSlintEffectHandler;
 
-impl StoreHandlerTrait<Vec<slint_generatedMainWindow::Peripheral>>
-    for PeripheralSlintEffectHandler
-{
-    async fn on_set(
-        window_weak: &Weak<crate::MainWindow>,
-        value: Vec<slint_generatedMainWindow::Peripheral>,
+impl StoreHandlerTrait<Vec<Peripheral>> for PeripheralSlintEffectHandler {
+    fn on_set(
+        window_weak: &Weak<MainWindow>,
+        value: Vec<Peripheral>,
     ) -> Result<(), StoreHandlerErr> {
         todo!()
     }
 
-    async fn on_get(
-        window_weak: &Weak<crate::MainWindow>,
-    ) -> Result<Vec<slint_generatedMainWindow::Peripheral>, StoreHandlerErr> {
+    fn on_get(window_weak: &Weak<crate::MainWindow>) -> Result<Vec<Peripheral>, StoreHandlerErr> {
         todo!()
     }
 }

@@ -1,8 +1,4 @@
-use crate::{
-    CENTRAL_TX, ExtendedCentralEvent, InitTrait as _, SCAN_TX,
-    ble::ble_manager,
-    stores::{DEVICES_STORE, SIDE_NAV_STORE},
-};
+use crate::{CENTRAL_TX, ExtendedCentralEvent, SCAN_TX, ble::ble_manager, stores::SIDE_NAV_STORE};
 use btleplug::api::{Central, Manager, ScanFilter};
 use futures::StreamExt;
 use tokio::sync::mpsc::{self};

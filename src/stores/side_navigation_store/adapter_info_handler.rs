@@ -10,7 +10,7 @@ use crate::{
 pub struct AdapterInfosEffectHandler;
 
 impl StoreHandlerTrait<Vec<AdapterInfo>> for AdapterInfosEffectHandler {
-    async fn on_set(
+    fn on_set(
         window_weak: &slint::Weak<crate::MainWindow>,
         value: Vec<AdapterInfo>,
     ) -> Result<(), StoreHandlerErr> {
@@ -27,7 +27,7 @@ impl StoreHandlerTrait<Vec<AdapterInfo>> for AdapterInfosEffectHandler {
         Ok(())
     }
 
-    async fn on_get(
+    fn on_get(
         _window_weak: &slint::Weak<crate::MainWindow>,
     ) -> Result<Vec<AdapterInfo>, StoreHandlerErr> {
         // NOTE: for now nothing to do

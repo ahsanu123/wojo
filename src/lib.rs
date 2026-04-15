@@ -15,6 +15,7 @@ slint::include_modules!();
 pub(crate) mod ble;
 pub(crate) mod helpers;
 pub(crate) mod models;
+pub(crate) mod repositories;
 pub(crate) mod stores;
 pub(crate) mod tasks;
 
@@ -26,10 +27,6 @@ static CENTRAL_TX: OnceCell<Sender<ExtendedCentralEvent>> = OnceCell::const_new(
 static SCAN_TX: OnceCell<Sender<ScannEvent>> = OnceCell::const_new();
 
 pub static MAINWINDOW_WEAK: OnceCell<Weak<MainWindow>> = OnceCell::const_new();
-
-pub trait InitTrait {
-    fn init(&mut self) -> impl Future<Output = ()>;
-}
 
 pub async fn main() {
     unsafe {
@@ -50,24 +47,9 @@ pub async fn main() {
     let ble_scanner_task_handle = tokio::spawn(async move { ble_scanner_task().await });
     let background_task_handle = tokio::spawn(async move { background_task(central_rx).await });
 
-    let sidenav_store = main_window.global::<SideNavigationStore>();
-
-    sidenav_store.on_onRescan(|| {
-        if let Some(scan_tx) = SCAN_TX.get() {
-            scan_tx
-                .try_send(ScannEvent::Restart)
-                .expect("fail to send rescan event");
-        }
-    });
-
-    sidenav_store.on_onPeripheralConnect(|peripheral_id| {
-        tokio::spawn(async move {
-            let mut store = SIDE_NAV_STORE.lock().await;
-            let _ = store.handle_on_connect(peripheral_id.into()).await;
-        });
-    });
-
     main_window.run().expect("fail to run window");
+
+    store_slint_event_connector(&main_window);
 
     if let Some(scan_tx) = SCAN_TX.get() {
         scan_tx
@@ -86,18 +68,38 @@ pub async fn main() {
     ble_scanner_task_handle
         .await
         .expect("fail to wait ble_scanner_task");
-    println!("ble_scanner_task stopped!");
 
     background_task_handle
         .await
         .expect("fail to wait background_task");
-    println!("background_task stopped!");
 
     println!("success to exit");
 
     unsafe {
         env::remove_var("SLINT_SCALE_FACTOR");
     }
+}
+
+pub fn store_slint_event_connector(main_window: &MainWindow) {
+    let sidenav_store: SideNavigationStore = main_window.global();
+
+    sidenav_store.on_onRescan(|| {
+        if let Some(scan_tx) = SCAN_TX.get() {
+            scan_tx
+                .try_send(ScannEvent::Restart)
+                .expect("fail to send rescan event");
+        }
+    });
+
+    sidenav_store.on_onPeripheralConnect(|peripheral_id| {
+        tokio::spawn(async move {
+            let mut store = SIDE_NAV_STORE.lock().await;
+            store
+                .handle_on_connect(peripheral_id.into())
+                .await
+                .expect("fail to handle_on_connect");
+        });
+    });
 }
 
 #[cfg(target_os = "android")]
